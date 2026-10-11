@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Freelance — Admin{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section admin-panel">
+  <header class="section-head">
+    <h1>Freelance</h1>
+    <p>
+      <a href="{{ url_for('admin.dashboard') }}">← Dashboard</a>
+      · <a href="{{ url_for('admin.freelance_new') }}">Add project</a>
+      · <a href="{{ url_for('public.freelance') }}">View public page</a>
+    </p>
+  </header>
+  <p class="help">These are private or client projects. They are not pulled from GitHub. Leave the client blank when the name should stay private.</p>
+
+  {% if not projects %}
+  <div class="state state-empty">
+    <h2>No freelance projects</h2>
+    <p>Add one to show it on the Freelance tab.</p>
+  </div>
+  {% else %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td>
+          <strong>{{ project.title }}</strong><br>
+          <span class="muted">{{ project.client or "Private client" }}{% if project.start_date %} · {{ project.start_date }}{% endif %}</span>
+        </td>
+        <td>{% if project.is_published %}Published{% else %}Draft{% endif %}</td>
+        <td class="table-actions">
+          <a href="{{ url_for('admin.freelance_edit', project_id=project.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('admin.freelance_delete', project_id=project.id) }}" onsubmit="return confirm('Delete this project?');">
+            <button type="submit" class="linkish">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.name if profile else site_name }} — Open to work{% endblock %}
+{% block body_class %}page-home{% endblock %}
+{% block main_class %}page page-hero{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="brand-hero">{{ profile.name if profile else site_name }}</p>
+  <h1 class="hero-line">
+    {{ profile.headline if profile else "Software engineer · Builder · Open to work" }}
+  </h1>
+  <p class="hero-support">
+    {{ profile.bio if profile else "Placeholder bio — edit in admin." }}
+  </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ profile.cta_href if profile else '/experience' }}">
+        {{ profile.cta_label if profile else "See my work" }}
+      </a>
+      <a class="btn btn-ghost" href="{{ url_for('public.projects') }}">GitHub projects</a>
+      {% if profile and profile.linkedin_url %}
+      <a class="btn btn-ghost" href="{{ profile.linkedin_url }}" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+      {% endif %}
+    </div>
+</section>
+
+{% if skills %}
+<section class="section section-narrow" aria-labelledby="home-skills-heading">
+  <header class="section-head">
+    <h2 id="home-skills-heading">Skills</h2>
+    <p>{% if linkedin_synced %}Synced from LinkedIn.{% else %}What I work with.{% endif %}</p>
+  </header>
+  <ul class="skill-list">
+    {% for skill in skills %}
+    <li class="skill-chip">{{ skill.name }}</li>
+    {% endfor %}
+  </ul>
+  <p class="section-more"><a href="{{ url_for('public.experience') }}#skills">Experience and skills →</a></p>
+</section>
+{% endif %}
+
+{% if featured %}
+<section class="section section-narrow">
+  <header class="section-head">
+    <h2>Recent roles</h2>
+    <p>{% if linkedin_synced %}Synced from LinkedIn.{% else %}Selected roles.{% endif %}</p>
+  </header>
+  <ul class="role-list">
+    {% for role in featured %}
+    <li class="role-row">
+      <div class="role-meta">
+        <h3>{{ role.title }}</h3>
+        <p class="role-company">{{ role.company }}</p>
+        <p class="role-dates">
+          {{ role.start_date }}
+          — {% if role.is_current %}Present{% else %}{{ role.end_date or "—" }}{% endif %}
+        </p>
+      </div>
+      <p class="role-body">{{ role.public_description }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="section-more"><a href="{{ url_for('public.experience') }}">Full experience →</a></p>
+</section>
+{% endif %}
+{% endblock %}

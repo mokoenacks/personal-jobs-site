@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Personal site for {{ site_name }} — experience, projects, and work.{% endblock %}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('public.home') }}">{{ site_name }}</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="{{ url_for('public.experience') }}">Experience</a>
+      <a href="{{ url_for('public.projects') }}">Projects</a>
+      <a href="{{ url_for('public.freelance') }}">Freelance</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('admin.dashboard') }}">Admin</a>
+      {% else %}
+        <a class="nav-quiet" href="{{ url_for('admin.login') }}">Sign in</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack" role="status">
+        {% for category, message in messages %}
+          <p class="flash flash-{{ category }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="{% block main_class %}page{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      <span class="brand-mark">{{ site_name }}</span> — honest work history and projects.
+      {% if profile and profile.linkedin_url %}
+        <a href="{{ profile.linkedin_url }}" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+      {% endif %}
+      {% if profile and profile.github_url %}
+        <a href="{{ profile.github_url }}" rel="noopener noreferrer" target="_blank">GitHub</a>
+      {% endif %}
+    </p>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

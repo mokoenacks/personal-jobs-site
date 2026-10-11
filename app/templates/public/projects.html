@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Projects — {{ site_name }}{% endblock %}
+{% block body_class %}page-projects{% endblock %}
+
+{% block content %}
+<section class="section">
+  <header class="section-head">
+    <h1>Projects</h1>
+    <p>
+      Public repositories from
+      {% if profile and profile.github_url %}
+      <a href="{{ profile.github_url }}" rel="noopener noreferrer" target="_blank">{{ profile.github_url }}</a>.
+      {% elif profile and profile.github_username %}
+      <strong>@{{ profile.github_username }}</strong>.
+      {% else %}
+      your GitHub profile.
+      {% endif %}
+    </p>
+  </header>
+
+  {% if loading %}
+  <div class="state state-loading" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <h2>Loading projects…</h2>
+    <p>Fetching the latest public repos.</p>
+  </div>
+  {% elif empty %}
+  <div class="state state-empty" role="status">
+    <h2>No projects to show</h2>
+    <p>This GitHub user has no visible non-fork repositories yet, or they were hidden in admin.</p>
+  </div>
+  {% elif error and not projects %}
+  <div class="state state-error" role="alert">
+    <h2>Could not load projects</h2>
+    <p>{{ status.message }}</p>
+    {% if status.error %}<p class="state-detail">{{ status.error }}</p>{% endif %}
+  </div>
+  {% else %}
+    {% if error %}
+    <div class="banner banner-warn" role="status">
+      {{ status.message }}
+      {% if status.source %} <span class="muted">(source: {{ status.source }})</span>{% endif %}
+    </div>
+    {% endif %}
+
+    <ul class="project-list">
+      {% for project in projects %}
+      <li class="project-row">
+        <div class="project-top">
+          <h2><a href="{{ project.html_url }}" rel="noopener noreferrer" target="_blank">{{ project.name }}</a></h2>
+          <p class="project-stats">
+            {% if project.language %}<span>{{ project.language }}</span>{% endif %}
+            <span>★ {{ project.stars }}</span>
+          </p>
+        </div>
+        <p class="project-desc">{{ project.description or "No description on GitHub." }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</section>
+{% endblock %}

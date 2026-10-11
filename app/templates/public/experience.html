@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Experience — {{ site_name }}{% endblock %}
+{% block body_class %}page-experience{% endblock %}
+
+{% block content %}
+<section class="section">
+  <header class="section-head">
+    <h1>Experience</h1>
+    <p>
+      {% if linkedin_synced %}
+      Work experience and skills synced from LinkedIn.
+      {% else %}
+      Roles and skills.
+      {% endif %}
+      {% if profile and profile.linkedin_url %}
+      Also on <a href="{{ profile.linkedin_url }}" rel="noopener noreferrer" target="_blank">LinkedIn</a>.
+      {% endif %}
+    </p>
+  </header>
+
+  {% if skills %}
+  <section class="skills-block" id="skills" aria-labelledby="skills-heading">
+    <h2 id="skills-heading" class="subsection-title">Skills</h2>
+    <ul class="skill-list">
+      {% for skill in skills %}
+      <li class="skill-chip">{{ skill.name }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if not roles %}
+  <div class="state state-empty" role="status">
+    <h2>No published experience yet</h2>
+    <p>Sync a LinkedIn data export under Admin → LinkedIn, or add roles yourself.</p>
+    <a class="btn btn-primary" href="{{ url_for('admin.login') }}">Open admin</a>
+  </div>
+  {% else %}
+  <ol class="timeline">
+    {% for role in roles %}
+    <li class="timeline-item">
+      <div class="timeline-rail" aria-hidden="true"></div>
+      <div class="timeline-body">
+        <p class="timeline-dates">
+          {{ role.start_date }}
+          — {% if role.is_current %}Present{% else %}{{ role.end_date or "—" }}{% endif %}
+          {% if role.location %}<span class="sep">·</span> {{ role.location }}{% endif %}
+        </p>
+        <h2>{{ role.title }}</h2>
+        <p class="role-company">{{ role.company }}</p>
+        <p class="role-body">{{ role.public_description }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+</section>
+{% endblock %}

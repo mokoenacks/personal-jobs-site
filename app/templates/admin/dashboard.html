@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section admin-panel">
+  <header class="section-head">
+    <h1>Dashboard</h1>
+    <p>Manage what the public site shows.</p>
+  </header>
+
+  <nav class="admin-nav">
+    <a href="{{ url_for('admin.profile_edit') }}">Profile</a>
+    <a href="{{ url_for('admin.experience_list') }}">Experience</a>
+    <a href="{{ url_for('admin.linkedin_settings') }}">LinkedIn</a>
+    <a href="{{ url_for('admin.github_manage') }}">GitHub</a>
+    <a href="{{ url_for('admin.freelance_list') }}">Freelance</a>
+    <a href="{{ url_for('admin.logout') }}">Sign out</a>
+  </nav>
+
+  <ul class="admin-stats">
+    <li><span class="stat-label">Published roles</span><strong>{{ published }}</strong> / {{ exp_count }}</li>
+    <li><span class="stat-label">Published skills</span><strong>{{ skill_count }}</strong></li>
+    <li>
+      <span class="stat-label">LinkedIn sync</span>
+      <strong>{{ linkedin_status.last_status }}</strong>
+      <span class="muted">{{ linkedin_status.last_sync or "never" }}</span>
+    </li>
+    <li><span class="stat-label">GitHub projects</span><strong>{{ project_count }}</strong></li>
+    <li><span class="stat-label">Freelance projects</span><strong>{{ freelance_count }}</strong></li>
+    <li>
+      <span class="stat-label">GitHub sync</span>
+      <strong>{{ github_status.last_status }}</strong>
+      <span class="muted">{{ github_status.source }} · {{ github_status.last_sync or "never" }}</span>
+    </li>
+  </ul>
+</section>
+{% endblock %}

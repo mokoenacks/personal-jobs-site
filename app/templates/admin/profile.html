@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Profile — Admin{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section section-narrow admin-panel">
+  <header class="section-head">
+    <h1>Profile</h1>
+    <p><a href="{{ url_for('admin.dashboard') }}">← Dashboard</a></p>
+  </header>
+  <form method="post" class="form-stack">
+    <label>Name <input type="text" name="name" value="{{ profile.name }}" required></label>
+    <label>Headline <input type="text" name="headline" value="{{ profile.headline }}"></label>
+    <label>Bio <textarea name="bio" rows="5">{{ profile.bio }}</textarea></label>
+    <label>Location <input type="text" name="location" value="{{ profile.location }}"></label>
+    <label>Email <input type="email" name="email" value="{{ profile.email }}"></label>
+    <label>
+      LinkedIn profile URL
+      <input type="url" name="linkedin_url" value="{{ profile.linkedin_url }}" placeholder="https://www.linkedin.com/in/...">
+    </label>
+    <p class="help">Shown in the public footer. LinkedIn asks visitors to sign in before it will show roles and skills, so this link cannot be read automatically. Sync those from the data export under <a href="{{ url_for('admin.linkedin_settings') }}">Admin → LinkedIn</a>.</p>
+    <label>
+      GitHub profile link
+      <input type="url" name="github_url" value="{{ profile.github_url or '' }}" placeholder="https://github.com/your-handle">
+    </label>
+    <p class="help">Public repositories from this link appear on the Projects tab.</p>
+    <label>CTA label <input type="text" name="cta_label" value="{{ profile.cta_label }}"></label>
+    <label>CTA href <input type="text" name="cta_href" value="{{ profile.cta_href }}"></label>
+    <button class="btn btn-primary" type="submit">Save profile</button>
+  </form>
+</section>
+{% endblock %}

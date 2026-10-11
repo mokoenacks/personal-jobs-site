@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Admin sign in — {{ site_name }}{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section section-narrow admin-panel">
+  <header class="section-head">
+    <h1>Admin</h1>
+    <p>Sign in to manage experience, LinkedIn sync, and GitHub projects.</p>
+  </header>
+  <form method="post" class="form-stack">
+    <label>
+      Username
+      <input type="text" name="username" autocomplete="username" required>
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </form>
+</section>
+{% endblock %}

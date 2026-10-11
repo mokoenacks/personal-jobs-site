@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Experience — Admin{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section admin-panel">
+  <header class="section-head">
+    <h1>Experience</h1>
+    <p>
+      <a href="{{ url_for('admin.dashboard') }}">← Dashboard</a>
+      · <a href="{{ url_for('admin.experience_new') }}">Add role</a>
+      · <a href="{{ url_for('admin.linkedin_settings') }}">Sync from LinkedIn</a>
+    </p>
+  </header>
+
+  {% if not roles %}
+  <div class="state state-empty">
+    <h2>No experience entries</h2>
+    <p>Sync a LinkedIn export, or create a role here.</p>
+  </div>
+  {% else %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Public text</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for role in roles %}
+      <tr>
+        <td>
+          <strong>{{ role.title }}</strong><br>
+          <span class="muted">{{ role.company }} · {{ role.start_date }}</span>
+        </td>
+        <td>
+          {% if role.use_custom_text %}Own words{% elif role.linkedin_raw %}LinkedIn{% else %}Empty{% endif %}
+        </td>
+        <td>{% if role.is_published %}Published{% else %}Draft{% endif %}</td>
+        <td class="table-actions">
+          <a href="{{ url_for('admin.experience_edit', role_id=role.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('admin.experience_delete', role_id=role.id) }}" onsubmit="return confirm('Delete this role?');">
+            <button type="submit" class="linkish">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% endblock %}

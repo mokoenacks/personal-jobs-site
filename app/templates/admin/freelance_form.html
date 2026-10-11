@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}New{% else %}Edit{% endif %} freelance project — Admin{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section section-narrow admin-panel">
+  <header class="section-head">
+    <h1>{% if is_new %}New freelance project{% else %}Edit freelance project{% endif %}</h1>
+    <p><a href="{{ url_for('admin.freelance_list') }}">← All freelance projects</a></p>
+  </header>
+
+  <form method="post" class="form-stack">
+    <label>Title <input type="text" name="title" value="{{ project.title or '' }}" required></label>
+    <label>Summary <textarea name="summary" rows="5" placeholder="What you built and the outcome">{{ project.summary or '' }}</textarea></label>
+    <label>
+      Client
+      <input type="text" name="client" value="{{ project.client or '' }}" placeholder="Leave blank to keep the client private">
+    </label>
+    <label>
+      Technologies
+      <input type="text" name="technologies" value="{{ project.technologies or '' }}" placeholder="Python, Flask">
+    </label>
+    <label>
+      Link
+      <input type="url" name="project_url" value="{{ project.project_url or '' }}" placeholder="Optional public link">
+    </label>
+    <div class="form-row">
+      <label>Start <input type="text" name="start_date" value="{{ project.start_date or '' }}" placeholder="2024-01"></label>
+      <label>End <input type="text" name="end_date" value="{{ project.end_date or '' }}" placeholder="2024-06"></label>
+    </div>
+    <label class="check">
+      <input type="checkbox" name="is_current" value="1" {% if project.is_current %}checked{% endif %}>
+      Current project
+    </label>
+    <label>Sort order <input type="number" name="sort_order" value="{{ project.sort_order or 0 }}"></label>
+    <label class="check">
+      <input type="checkbox" name="is_published" value="1" {% if project.is_published %}checked{% endif %}>
+      Published on the Freelance tab
+    </label>
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+</section>
+{% endblock %}

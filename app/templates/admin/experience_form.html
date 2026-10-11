@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}New{% else %}Edit{% endif %} experience — Admin{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section section-narrow admin-panel">
+  <header class="section-head">
+    <h1>{% if is_new %}New role{% else %}Edit role{% endif %}</h1>
+    <p><a href="{{ url_for('admin.experience_list') }}">← All experience</a></p>
+  </header>
+
+  <form method="post" class="form-stack">
+    <label>Company <input type="text" name="company" value="{{ role.company or '' }}" required></label>
+    <label>Title <input type="text" name="title" value="{{ role.title or '' }}" required></label>
+    <label>Location <input type="text" name="location" value="{{ role.location or '' }}"></label>
+    <div class="form-row">
+      <label>Start <input type="text" name="start_date" placeholder="2023-03" value="{{ role.start_date or '' }}"></label>
+      <label>End <input type="text" name="end_date" placeholder="2025-01" value="{{ role.end_date or '' }}"></label>
+    </div>
+    <label class="check">
+      <input type="checkbox" name="is_current" value="1" {% if role.is_current %}checked{% endif %}>
+      Current role
+    </label>
+    <label>Sort order <input type="number" name="sort_order" value="{{ role.sort_order or 0 }}"></label>
+
+    <fieldset class="fieldset">
+      <legend>Public copy</legend>
+      <label>
+        Your words (shown publicly when enabled)
+        <textarea name="display_override" rows="5" placeholder="How this role should read on the site">{{ role.display_override or '' }}</textarea>
+      </label>
+      <label>
+        LinkedIn description
+        <textarea name="linkedin_raw" rows="3" placeholder="Filled by LinkedIn sync. Shown publicly when your own words are off.">{{ role.linkedin_raw or '' }}</textarea>
+      </label>
+      <label class="check">
+        <input type="checkbox" name="use_custom_text" value="1" {% if role.use_custom_text %}checked{% endif %}>
+        Show my words publicly
+      </label>
+      <p class="help">When this is off, visitors see the LinkedIn description. A later sync refreshes that description and keeps your words.</p>
+    </fieldset>
+
+    <label class="check">
+      <input type="checkbox" name="is_published" value="1" {% if role.is_published %}checked{% endif %}>
+      Published
+    </label>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+
+  {% if not is_new %}
+  <div class="preview-block">
+    <h2>Public preview</h2>
+    <p class="role-body">{{ role.public_description }}</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

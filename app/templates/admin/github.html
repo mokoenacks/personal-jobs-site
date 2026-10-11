@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}GitHub — Admin{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block content %}
+<section class="section admin-panel">
+  <header class="section-head">
+    <h1>GitHub projects</h1>
+    <p><a href="{{ url_for('admin.dashboard') }}">← Dashboard</a></p>
+  </header>
+
+  <ul class="admin-stats">
+    <li><span class="stat-label">Last sync</span><strong>{{ status.last_sync or "never" }}</strong></li>
+    <li><span class="stat-label">Status</span><strong>{{ status.last_status }}</strong></li>
+    <li><span class="stat-label">Source</span><strong>{{ status.source }}</strong></li>
+  </ul>
+  {% if status.last_error %}
+  <div class="banner banner-warn">{{ status.last_error }}</div>
+  {% endif %}
+
+  <form method="post" class="form-stack">
+    <input type="hidden" name="action" value="save_url">
+    <label>
+      GitHub profile link
+      <input
+        type="url"
+        name="github_url"
+        value="{{ profile.github_url or '' }}"
+        placeholder="https://github.com/your-handle"
+        autocomplete="url"
+      >
+    </label>
+    <p class="help">Public repositories from this profile are shown on the Projects tab. Private repositories stay off that list — add those under Freelance.</p>
+    <button class="btn btn-primary" type="submit">Save link and sync projects</button>
+  </form>
+
+  {% if not projects %}
+  <div class="state state-empty">
+    <h2>No public repositories yet</h2>
+    <p>Save the GitHub profile link above to load them.</p>
+  </div>
+  {% else %}
+  <ul class="project-list">
+    {% for project in projects %}
+    <li class="project-row">
+      <div class="project-top">
+        <h2><a href="{{ project.html_url }}" rel="noopener noreferrer" target="_blank">{{ project.name }}</a></h2>
+        <p class="project-stats">
+          {% if project.language %}<span>{{ project.language }}</span>{% endif %}
+          <span>★ {{ project.stars }}</span>
+        </p>
+      </div>
+      <p class="project-desc">{{ project.description or "—" }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endblock %}

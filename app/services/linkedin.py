@@ -504,7 +504,15 @@ def summarize_sync(result: dict[str, Any]) -> str:
         parts.append(f"{skills} skill{'s' if skills != 1 else ''}")
     if result.get("profile_updated"):
         parts.append("profile text")
-    if not parts:
+    if not result.get("saw_positions") and not result.get("saw_skills"):
+        message = (
+            "That download only has your profile"
+            + (", which was updated." if result.get("profile_updated") else ".")
+            + " Roles and skills are not in the quick file named Basic_LinkedInDataExport."
+            " On LinkedIn, open Settings, Data privacy, Get a copy of your data,"
+            " and request the larger data archive. When that email arrives, upload that zip."
+        )
+    elif not parts:
         message = "Nothing new was in that export."
     else:
         message = "LinkedIn sync updated " + ", ".join(parts) + ". The public site matches this export."

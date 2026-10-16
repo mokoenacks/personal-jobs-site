@@ -236,7 +236,11 @@ def linkedin_settings():
                     uploads,
                     update_profile=bool(request.form.get("update_profile")),
                 )
-                flash(linkedin_service.summarize_sync(result), "success")
+                incomplete = not result.get("saw_positions") and not result.get("saw_skills")
+                flash(
+                    linkedin_service.summarize_sync(result),
+                    "error" if incomplete else "success",
+                )
             except ValueError as exc:
                 flash(str(exc), "error")
             except Exception:

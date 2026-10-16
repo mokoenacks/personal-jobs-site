@@ -182,6 +182,12 @@ class LinkedInExportSyncTest(unittest.TestCase):
         self.assertIn(b"Acme", page.data)
         self.assertIn(b"Go", page.data)
 
+    def test_basic_export_explains_missing_roles(self):
+        response = self._upload("Basic_LinkedInDataExport.zip", _zip({"Profile.csv": PROFILE}))
+        self.assertIn(b"larger data archive", response.data)
+        self.assertIn(b"Basic_LinkedInDataExport", response.data)
+        self.assertIn(b"Northwind", self.client.get("/experience").data)
+
     def test_rejects_unrelated_file(self):
         response = self.client.post(
             "/admin/linkedin",

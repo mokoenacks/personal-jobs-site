@@ -16,8 +16,6 @@ class Config:
     SITE_OWNER_NAME = os.environ.get("SITE_OWNER_NAME", "C.k.s Mokoena")
     GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME", "octocat")
     GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-    LINKEDIN_ACCESS_TOKEN = os.environ.get("LINKEDIN_ACCESS_TOKEN", "")
-    LINKEDIN_PERSON_URN = os.environ.get("LINKEDIN_PERSON_URN", "")
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024
     ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
     ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")

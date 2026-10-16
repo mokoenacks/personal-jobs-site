@@ -7,11 +7,7 @@
   <header class="section-head">
     <h1>Experience</h1>
     <p>
-      {% if linkedin_synced %}
-      Work experience and skills synced from LinkedIn.
-      {% else %}
       Roles and skills.
-      {% endif %}
       {% if profile and profile.linkedin_url %}
       Also on <a href="{{ profile.linkedin_url }}" rel="noopener noreferrer" target="_blank">LinkedIn</a>.
       {% endif %}
@@ -32,7 +28,7 @@
   {% if not roles %}
   <div class="state state-empty" role="status">
     <h2>No published experience yet</h2>
-    <p>Sync a LinkedIn data export under Admin → LinkedIn, or add roles yourself.</p>
+    <p>Roles you add in admin show up here.</p>
     <a class="btn btn-primary" href="{{ url_for('admin.login') }}">Open admin</a>
   </div>
   {% else %}

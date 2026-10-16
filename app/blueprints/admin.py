@@ -12,18 +12,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 from app.extensions import db
 from app.models import Experience, FreelanceProject, Profile, Skill, User
 from app.services import github as github_service
-from app.services import linkedin as linkedin_service
 
 admin_bp = Blueprint("admin", __name__)
-
-
-def _normalize_linkedin_url(raw: str) -> str:
-    url = (raw or "").strip()
-    if not url:
-        return ""
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
-    return url
 
 
 @admin_bp.route("/login", methods=["GET", "POST"])
@@ -71,7 +61,6 @@ def dashboard():
         skill_count=skill_count,
         project_count=len(project_count),
         github_status=github_status,
-        linkedin_status=linkedin_service.sync_status(),
         freelance_count=freelance_count,
     )
 
@@ -117,7 +106,8 @@ def experience_list():
     roles = Experience.query.order_by(
         Experience.sort_order.asc(), Experience.start_date.desc()
     ).all()
-    return render_template("admin/experience_list.html", roles=roles)
+    skills = Skill.query.order_by(Skill.sort_order.asc(), Skill.name.asc()).all()
+    return render_template("admin/experience_list.html", roles=roles, skills=skills)
 
 
 @admin_bp.route("/experience/new", methods=["GET", "POST"])
@@ -131,9 +121,8 @@ def experience_new():
             start_date=(request.form.get("start_date") or "").strip(),
             end_date=(request.form.get("end_date") or "").strip(),
             is_current=bool(request.form.get("is_current")),
-            linkedin_raw=(request.form.get("linkedin_raw") or "").strip(),
-            display_override=(request.form.get("display_override") or "").strip(),
-            use_custom_text=bool(request.form.get("use_custom_text")),
+            display_override=(request.form.get("description") or "").strip(),
+            use_custom_text=True,
             sort_order=int(request.form.get("sort_order") or 0),
             is_published=bool(request.form.get("is_published")),
         )
@@ -162,16 +151,15 @@ def experience_edit(role_id):
         role.start_date = (request.form.get("start_date") or "").strip()
         role.end_date = (request.form.get("end_date") or "").strip()
         role.is_current = bool(request.form.get("is_current"))
-        role.linkedin_raw = (request.form.get("linkedin_raw") or "").strip()
-        role.display_override = (request.form.get("display_override") or "").strip()
-        role.use_custom_text = bool(request.form.get("use_custom_text"))
+        role.display_override = (request.form.get("description") or "").strip()
+        role.use_custom_text = True
         role.sort_order = int(request.form.get("sort_order") or 0)
         role.is_published = bool(request.form.get("is_published"))
         if not role.company or not role.title:
             flash("Company and title are required.", "error")
             return render_template("admin/experience_form.html", role=role, is_new=False)
         db.session.commit()
-        flash("Experience saved. Public text uses your override when enabled.", "success")
+        flash("Experience saved.", "success")
         return redirect(url_for("admin.experience_list"))
     return render_template("admin/experience_form.html", role=role, is_new=False)
 
@@ -186,81 +174,22 @@ def experience_delete(role_id):
     return redirect(url_for("admin.experience_list"))
 
 
-def _linkedin_context(profile):
-    has_api = bool(
-        current_app.config.get("LINKEDIN_ACCESS_TOKEN")
-        and current_app.config.get("LINKEDIN_PERSON_URN")
-    )
-    skills = Skill.query.order_by(Skill.sort_order.asc(), Skill.name.asc()).all()
-    return {
-        "profile": profile,
-        "has_api": has_api,
-        "skills": skills,
-        "linkedin_status": linkedin_service.sync_status(),
-    }
-
-
-@admin_bp.route("/linkedin", methods=["GET", "POST"])
+@admin_bp.route("/skills", methods=["POST"])
 @login_required
-def linkedin_settings():
-    """Save the public profile URL and sync roles and skills from a LinkedIn export."""
-    profile = Profile.query.first()
-    if not profile:
-        profile = Profile(name=current_app.config.get("SITE_OWNER_NAME", "C.k.s Mokoena"))
-        db.session.add(profile)
-        db.session.commit()
-
-    if request.method == "POST":
-        action = request.form.get("action") or "save_url"
-
-        if action == "api_fetch":
-            try:
-                items = linkedin_service.fetch_linkedin_api()
-                result = linkedin_service.import_experiences(items)
-                flash(
-                    f"API import complete ({result['created']} new, {result['updated']} updated).",
-                    "success",
-                )
-                return redirect(url_for("admin.experience_list"))
-            except Exception as exc:
-                flash(str(exc), "error")
-                return redirect(url_for("admin.linkedin_settings"))
-
-        if action == "sync_export":
-            uploads = []
-            for storage in request.files.getlist("linkedin_export"):
-                if storage and storage.filename:
-                    uploads.append((storage.filename, storage.read()))
-            try:
-                result = linkedin_service.sync_linkedin_export(
-                    uploads,
-                    update_profile=bool(request.form.get("update_profile")),
-                )
-                incomplete = not result.get("saw_positions") and not result.get("saw_skills")
-                flash(
-                    linkedin_service.summarize_sync(result),
-                    "error" if incomplete else "success",
-                )
-            except ValueError as exc:
-                flash(str(exc), "error")
-            except Exception:
-                flash("Could not read that export. Upload the .zip from LinkedIn, or the CSV files.", "error")
-            return redirect(url_for("admin.linkedin_settings"))
-
-        url = _normalize_linkedin_url(request.form.get("linkedin_url") or "")
-        if url and "linkedin.com" not in url.lower():
-            flash("Please paste a LinkedIn profile URL (linkedin.com/in/...).", "error")
-            return render_template("admin/linkedin.html", **_linkedin_context(profile))
-        profile.linkedin_url = url
-        db.session.commit()
-        flash(
-            "LinkedIn link saved. It appears on the public site. "
-            "Upload your data export above to sync roles and skills.",
-            "success",
-        )
-        return redirect(url_for("admin.linkedin_settings"))
-
-    return render_template("admin/linkedin.html", **_linkedin_context(profile))
+def skill_add():
+    name = (request.form.get("name") or "").strip()[:160]
+    if not name:
+        flash("Enter a skill name.", "error")
+        return redirect(url_for("admin.experience_list"))
+    existing = Skill.query.filter(db.func.lower(Skill.name) == name.lower()).first()
+    if existing:
+        existing.is_published = True
+        flash(f"{existing.name} is already on the list.", "success")
+    else:
+        db.session.add(Skill(name=name, source="manual", is_published=True))
+        flash(f"Added {name}.", "success")
+    db.session.commit()
+    return redirect(url_for("admin.experience_list"))
 
 
 @admin_bp.route("/skills/<int:skill_id>/toggle", methods=["POST"])
@@ -273,7 +202,18 @@ def skill_toggle(skill_id):
         f"{skill.name} is {'on' if skill.is_published else 'hidden from'} the public site.",
         "success",
     )
-    return redirect(url_for("admin.linkedin_settings"))
+    return redirect(url_for("admin.experience_list"))
+
+
+@admin_bp.route("/skills/<int:skill_id>/delete", methods=["POST"])
+@login_required
+def skill_delete(skill_id):
+    skill = Skill.query.get_or_404(skill_id)
+    name = skill.name
+    db.session.delete(skill)
+    db.session.commit()
+    flash(f"Removed {name}.", "success")
+    return redirect(url_for("admin.experience_list"))
 
 
 def _github_status():

@@ -73,7 +73,7 @@ class Experience(db.Model):
 
 
 class Skill(db.Model):
-    """Skill synced from the member's LinkedIn export."""
+    """A skill shown on the public site."""
 
     __tablename__ = "skills"
 
@@ -81,7 +81,7 @@ class Skill(db.Model):
     name = db.Column(db.String(160), nullable=False)
     sort_order = db.Column(db.Integer, default=0)
     is_published = db.Column(db.Boolean, default=True)
-    source = db.Column(db.String(40), default="linkedin")
+    source = db.Column(db.String(40), default="manual")
     created_at = db.Column(db.DateTime, default=utcnow)
     updated_at = db.Column(db.DateTime, default=utcnow, onupdate=utcnow)
 

@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template
 
 from app.models import Experience, FreelanceProject, Profile, Skill
-from app.services import linkedin as linkedin_service
 from app.services import github as github_service
 
 public_bp = Blueprint("public", __name__)
@@ -29,7 +28,6 @@ def home():
         profile=profile,
         featured=featured,
         skills=_published_skills(),
-        linkedin_synced=bool(linkedin_service.get_meta("linkedin_last_sync")),
     )
 
 
@@ -48,7 +46,6 @@ def experience():
         roles=roles,
         skills=skills,
         empty=len(roles) == 0 and len(skills) == 0,
-        linkedin_synced=bool(linkedin_service.get_meta("linkedin_last_sync")),
     )
 
 

@@ -9,21 +9,19 @@
     <p>
       <a href="{{ url_for('admin.dashboard') }}">← Dashboard</a>
       · <a href="{{ url_for('admin.experience_new') }}">Add role</a>
-      · <a href="{{ url_for('admin.linkedin_settings') }}">Sync from LinkedIn</a>
     </p>
   </header>
 
   {% if not roles %}
   <div class="state state-empty">
     <h2>No experience entries</h2>
-    <p>Sync a LinkedIn export, or create a role here.</p>
+    <p><a href="{{ url_for('admin.experience_new') }}">Add a role</a> to show it on the public site.</p>
   </div>
   {% else %}
   <table class="admin-table">
     <thead>
       <tr>
         <th>Role</th>
-        <th>Public text</th>
         <th>Status</th>
         <th></th>
       </tr>
@@ -34,9 +32,6 @@
         <td>
           <strong>{{ role.title }}</strong><br>
           <span class="muted">{{ role.company }} · {{ role.start_date }}</span>
-        </td>
-        <td>
-          {% if role.use_custom_text %}Own words{% elif role.linkedin_raw %}LinkedIn{% else %}Empty{% endif %}
         </td>
         <td>{% if role.is_published %}Published{% else %}Draft{% endif %}</td>
         <td class="table-actions">
@@ -50,5 +45,43 @@
     </tbody>
   </table>
   {% endif %}
+
+  <div class="preview-block">
+    <h2>Skills</h2>
+    <form method="post" action="{{ url_for('admin.skill_add') }}" class="form-stack">
+      <label>
+        Add a skill
+        <input type="text" name="name" maxlength="160" required placeholder="C#">
+      </label>
+      <button class="btn btn-primary" type="submit">Add skill</button>
+    </form>
+    {% if skills %}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for skill in skills %}
+        <tr>
+          <td>{{ skill.name }}</td>
+          <td>{% if skill.is_published %}Published{% else %}Hidden{% endif %}</td>
+          <td class="table-actions">
+            <form method="post" action="{{ url_for('admin.skill_toggle', skill_id=skill.id) }}">
+              <button type="submit" class="linkish">{% if skill.is_published %}Hide{% else %}Show{% endif %}</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.skill_delete', skill_id=skill.id) }}">
+              <button type="submit" class="linkish">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
 </section>
 {% endblock %}

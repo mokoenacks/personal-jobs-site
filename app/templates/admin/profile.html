@@ -18,7 +18,7 @@
       LinkedIn profile URL
       <input type="url" name="linkedin_url" value="{{ profile.linkedin_url }}" placeholder="https://www.linkedin.com/in/...">
     </label>
-    <p class="help">Shown in the public footer. LinkedIn asks visitors to sign in before it will show roles and skills, so this link cannot be read automatically. Sync those from the data export under <a href="{{ url_for('admin.linkedin_settings') }}">Admin → LinkedIn</a>.</p>
+    <p class="help">Shown in the footer and on the home page. Add roles and skills under Experience.</p>
     <label>
       GitHub profile link
       <input type="url" name="github_url" value="{{ profile.github_url or '' }}" placeholder="https://github.com/your-handle">

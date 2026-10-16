@@ -10,7 +10,7 @@ A PythonAnywhere-ready personal site: public brand landing, work experience, and
 
 - **Public site** — brand-first landing, experience timeline, GitHub projects
 - **Admin CMS** — sign in, edit profile and roles in your own words
-- **LinkedIn sync** — upload the data export LinkedIn gives you (Positions, Skills, Profile). The public site shows those roles and skills and updates on the next upload. The profile URL is only a public link.
+- **Experience and skills** — add roles and skills in admin. The LinkedIn address on the profile is only a public link.
 - **GitHub projects** — fetch public repos for a configurable username, cache display fields, mock fallback without a token
 - **Empty / loading / error states** for experience and projects
 
@@ -45,19 +45,13 @@ Seeded on first run if no users exist. Change `ADMIN_USERNAME` / `ADMIN_PASSWORD
 | `SITE_OWNER_NAME` | Display name (default: C.k.s Mokoena) |
 | `GITHUB_USERNAME` | Public repos to sync |
 | `GITHUB_TOKEN` | Optional; higher rate limits |
-| `LINKEDIN_ACCESS_TOKEN` | Optional LinkedIn API token |
-| `LINKEDIN_PERSON_URN` | Optional person URN for API import |
 | `PORT` | Local dev port (default `3847`) |
 
 See `.env.example`.
 
-## LinkedIn
+## Experience and skills
 
-Save your public profile URL in **Admin → LinkedIn**. It appears in the site footer and on the home page.
-
-LinkedIn does not include your roles or skills in that URL. To show them here, download your data from LinkedIn (**Settings → Data privacy → Get a copy of your data**) and upload the `.zip`, or `Positions.csv` and `Skills.csv`, on the same admin page. Each upload refreshes the public experience and skills. Custom wording on a role is kept.
-
-Optional: if `LINKEDIN_ACCESS_TOKEN` and `LINKEDIN_PERSON_URN` are set, Admin → LinkedIn can try an API fetch — usually unavailable for personal apps. Not required.
+Add roles and skills in **Admin → Experience**. The LinkedIn address on the profile page is only a public link.
 
 ## Deploy on PythonAnywhere
 

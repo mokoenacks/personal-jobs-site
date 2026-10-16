@@ -1,1 +1,1 @@
-# Service helpers for GitHub sync and LinkedIn export sync.
+# Service helpers for GitHub project sync.

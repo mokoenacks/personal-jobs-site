@@ -40,7 +40,7 @@ Seeded on first run if no users exist. Change `ADMIN_USERNAME` / `ADMIN_PASSWORD
 | Variable | Purpose |
 |----------|---------|
 | `SECRET_KEY` | Flask session secret |
-| `DATABASE_URL` | Defaults to SQLite under `instance/site.db` |
+| `DATABASE_URL` | Postgres on Render. Locally, leave it unset and the app uses SQLite under `instance/site.db` |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Seeded admin credentials |
 | `SITE_OWNER_NAME` | Display name (default: C.k.s Mokoena) |
 | `GITHUB_USERNAME` | Public repos to sync |
